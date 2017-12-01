@@ -1,0 +1,156 @@
+vpn:”√ªß√˚£∫yanghaijun √‹¬Î:pttl#123
+
+
+if (!elem) return;
+var data = {};
+var item = [];
+data.prev = false;
+data.next = false;
+if (elem.querySelector('.skip')) {
+  data.numberTaotal = (elem.querySelector('.skip').querySelectorAll('span')[0] && elem.querySelector('.skip').querySelectorAll('span')[0].textContent).replace(/[^0-9]/g, '');
+}
+var lis = elem.querySelectorAll('li');
+for (var i = 0; i < lis.length; i++) {
+  var as = lis[i].querySelectorAll('a');
+
+  for (var j = 0; j < as.length; j++) {
+    switch (as[j].getAttribute('title')) {
+      case 'Go to previous page':
+        data.prev = true;
+        break;
+
+      case 'Go to next page':
+        data.next = true;
+        ;
+        break;
+    }
+  }
+}
+var liss = elem.querySelectorAll('li');
+for (var k = 0; k < liss.length; k++) {
+  var active = liss[k].className;
+  if (active == 'active') {
+    data.currentPage = liss[k].querySelector('a').textContent;
+  }
+}
+data.page = elem.ownerDocument.querySelector('.content-bodytable').textContent != '' ? true : false;
+return data;
+
+
+
+
+
+
+
+import {
+  Component
+} from 'react';
+import {
+  Page
+} from 'ysp-custom-components';
+export default class extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      prevState:props.customData && props.customData.prev,
+      pageState:props.customData && props.customData.page,
+      nextState:props.customData && props.customData.next
+    }
+  }
+  componentWillReceiveProps(nextProps){
+    this.setState({
+      prevState: nextProps.customData && nextProps.customData.prev,
+      pageState: nextProps.customData && nextProps.customData.page,
+      nextState: nextProps.customData && nextProps.customData.next
+    })
+  }
+  render() {
+    let _this = this;
+    return (
+      <div>
+      	<Page 
+          pageState = {this.state.pageState}
+      	  prevState = {this.state.prevState}
+          nextState = {this.state.nextState}
+        	prev={(e)=>{
+          var handler = _this.props.customHandler;
+          if(handler){
+            handler({
+              data:"prev",
+              eventType:'prev'
+            })
+          }
+            e.target.parentElement.querySelector('.input-serch').querySelector('input').value = '';
+        }}
+          currentPage = {this.props.customData && this.props.customData.currentPage}
+        	pageNumber={this.props.customData && this.props.customData.numberTaotal}
+        	next={(e)=>{
+          var handler = _this.props.customHandler;
+          if(handler){
+            handler({
+              data:"next",
+              eventType:"next"
+            })
+          }
+            e.target.previousSibling.querySelector('input').value = '';
+        }}
+          Click={(e)=>{
+            var handler = this.props.customHandler;
+            var target = e.target;
+            // target.value = target.value.replace(/[^0-9]/g,'')
+            var value = target.parentElement.querySelector('input').value;
+            value = value.replace(/[^0-9]/g,'');
+            if(handler){
+              handler({
+                data:value,
+                eventType:'click'
+              })
+            }
+          }}
+          Change={(e)=>{
+            var target = e.target;
+            target.value = target.value.replace(/[^0-9]/g,'');
+          }}
+      />
+    </div>
+    )
+  }
+}
+
+
+
+
+switch (data.eventType) {
+  case 'prev':
+    prevtitle(data.dataCustom);
+    break;
+
+  case 'next':
+    prevtitle(data.dataCustom);
+    break;
+
+  case 'click':
+    click(data.dataCustom);
+    break;
+}
+function click(data) {
+  var input = elem.ownerDocument.querySelector('.skip-num');
+  input.value = data;
+  input.blur();
+  elem.ownerDocument.querySelector('#Page').querySelector('.skip_right_goto').querySelector('.skip-right-icon').click();
+}
+function prevtitle(data) {
+  var lis = elem.querySelectorAll('li');
+
+  for (var i = 0; i < lis.length; i++) {
+    var as = lis[i].querySelectorAll('a');
+
+    for (var j = 0; j < as.length; j++) {
+      if (data == 'prev' && as[j].getAttribute('title') == 'Go to previous page') {
+        as[j].click();
+      } else if (data == 'next' && as[j].getAttribute('title') == 'Go to next page') {
+        as[j].click();
+      }
+    }
+  }
+}
